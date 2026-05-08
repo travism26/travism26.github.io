@@ -1,0 +1,233 @@
+/* ============================================================
+   GrowBuddy Design System — Colors + Typography
+   Sourced from: travism26/growbuddy_v2 frontend (Chakra+Tailwind)
+   ============================================================ */
+
+:root {
+  /* ── Brand: GrowBuddy Green (the sole brand color) ────────── */
+  --gb-green-50:  #f0fdf4;
+  --gb-green-100: #dcfce7;
+  --gb-green-200: #bbf7d0;
+  --gb-green-300: #86efac;
+  --gb-green-400: #4ade80;
+  --gb-green-500: #22c55e;
+  --gb-green-600: #16a34a;   /* primary action / brand */
+  --gb-green-700: #15803d;   /* hover */
+  --gb-green-800: #166534;
+  --gb-green-900: #14532d;
+
+  /* ── Neutrals (Tailwind gray) ─────────────────────────────── */
+  --gb-gray-50:  #f9fafb;
+  --gb-gray-100: #f3f4f6;
+  --gb-gray-200: #e5e7eb;
+  --gb-gray-300: #d1d5db;
+  --gb-gray-400: #9ca3af;
+  --gb-gray-500: #6b7280;
+  --gb-gray-600: #4b5563;
+  --gb-gray-700: #374151;
+  --gb-gray-800: #1f2937;
+  --gb-gray-900: #111827;
+  --gb-white:    #ffffff;
+
+  /* ── Semantic accents (used for task & state coloring) ────── */
+  --gb-water-blue:    #3b82f6; /* watering (Droplets icon) */
+  --gb-water-blue-bg: #eff6ff;
+  --gb-fert-yellow:   #eab308; /* fertilize (Zap icon) */
+  --gb-fert-yellow-bg:#fefce8;
+  --gb-warn-red:      #ef4444; /* overdue / destructive */
+  --gb-warn-red-bg:   #fef2f2;
+  --gb-warn-red-border:#fecaca;
+  --gb-info:          #3b82f6;
+  --gb-success:       var(--gb-green-600);
+
+  /* Difficulty chips (from PlantProfileCard) */
+  --gb-easy-bg:       #dcfce7;  --gb-easy-fg:   #166534;
+  --gb-medium-bg:     #fef9c3;  --gb-medium-fg: #854d0e;
+  --gb-hard-bg:       #fee2e2;  --gb-hard-fg:   #991b1b;
+
+  /* Indoor / outdoor / both badges */
+  --gb-indoor-bg:  #eff6ff; --gb-indoor-fg:  #1d4ed8;
+  --gb-outdoor-bg: #f0fdf4; --gb-outdoor-fg: #15803d;
+  --gb-both-bg:    #faf5ff; --gb-both-fg:    #6b21a8;
+
+  /* Season chip tints (Lightbulb tips) */
+  --gb-season-spring: var(--gb-green-500);
+  --gb-season-summer: #eab308;
+  --gb-season-fall:   #f97316;
+  --gb-season-winter: #3b82f6;
+
+  /* ── Semantic role tokens ─────────────────────────────────── */
+  --gb-bg-app:        var(--gb-green-50);   /* page bg behind content */
+  --gb-bg-surface:    var(--gb-white);      /* cards */
+  --gb-bg-header:     var(--gb-green-600);  /* top app bar */
+  --gb-bg-header-fg:  var(--gb-white);
+  --gb-bg-nav:        var(--gb-white);      /* bottom nav */
+  --gb-bg-nav-active: var(--gb-green-50);
+
+  --gb-fg-strong:    var(--gb-gray-900);   /* headings */
+  --gb-fg-default:   var(--gb-gray-800);   /* body */
+  --gb-fg-muted:     var(--gb-gray-600);   /* meta */
+  --gb-fg-subtle:    var(--gb-gray-500);   /* hints */
+  --gb-fg-on-brand:  var(--gb-white);
+
+  --gb-border:        var(--gb-gray-200);
+  --gb-border-strong: var(--gb-gray-300);
+  --gb-ring:          var(--gb-green-600);
+
+  /* ── Typography ───────────────────────────────────────────── */
+  /* The codebase actually uses Arial/Helvetica/system. We bring
+     in Nunito as a SUBSTITUTION for headings/UI to give the brand
+     a friendlier, rounder voice befitting a gardening app. The
+     stack falls back to Arial so the codebase look is preserved
+     when fonts haven't loaded. See README "Font substitution". */
+  --gb-font-sans: "Nunito", Arial, Helvetica, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --gb-font-display: "Nunito", Arial, Helvetica, sans-serif;
+  --gb-font-mono: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+
+  --gb-fs-xs:   0.75rem;   /* 12 */
+  --gb-fs-sm:   0.875rem;  /* 14 */
+  --gb-fs-md:   1rem;      /* 16 — base */
+  --gb-fs-lg:   1.125rem;  /* 18 */
+  --gb-fs-xl:   1.25rem;   /* 20 */
+  --gb-fs-2xl:  1.5rem;    /* 24 */
+  --gb-fs-3xl:  1.875rem;  /* 30 */
+  --gb-fs-4xl:  2.25rem;   /* 36 */
+  --gb-fs-5xl:  3rem;      /* 48 */
+
+  --gb-fw-regular: 400;
+  --gb-fw-medium:  500;
+  --gb-fw-semibold:600;
+  --gb-fw-bold:    700;
+
+  --gb-lh-tight:  1.2;
+  --gb-lh-snug:   1.35;
+  --gb-lh-normal: 1.5;
+  --gb-lh-loose:  1.7;
+
+  /* ── Spacing scale (Chakra space tokens) ──────────────────── */
+  --gb-space-0: 0;
+  --gb-space-1: 0.25rem;
+  --gb-space-2: 0.5rem;
+  --gb-space-3: 0.75rem;
+  --gb-space-4: 1rem;
+  --gb-space-5: 1.25rem;
+  --gb-space-6: 1.5rem;
+  --gb-space-8: 2rem;
+  --gb-space-10: 2.5rem;
+  --gb-space-12: 3rem;
+  --gb-space-16: 4rem;
+  --gb-space-20: 5rem;
+  --gb-space-24: 6rem;
+
+  /* ── Radii (--radius: 0.5rem; lg in Chakra) ───────────────── */
+  --gb-radius-sm:   0.125rem;
+  --gb-radius-base: 0.25rem;
+  --gb-radius-md:   0.375rem;
+  --gb-radius-lg:   0.5rem;    /* default card / button */
+  --gb-radius-xl:   0.75rem;
+  --gb-radius-2xl:  1rem;
+  --gb-radius-full: 9999px;
+
+  /* ── Shadows ──────────────────────────────────────────────── */
+  --gb-shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+  --gb-shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.05);
+  --gb-shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.05);
+  --gb-shadow-card-hover: 0 10px 20px -8px rgba(22, 101, 52, 0.18);
+
+  /* ── Motion ───────────────────────────────────────────────── */
+  --gb-duration-fast: 120ms;
+  --gb-duration-base: 200ms;
+  --gb-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ── Layout ───────────────────────────────────────────────── */
+  --gb-max-content: 1024px;
+  --gb-bottom-nav-h: 64px;
+  --gb-header-h: 64px;
+}
+
+/* ============================================================
+   Semantic typography (h1–h6, p, code, labels)
+   Use these directly OR mix the variables above into your own.
+   ============================================================ */
+
+html, body { font-family: var(--gb-font-sans); color: var(--gb-fg-default); }
+body { background: var(--gb-bg-app); }
+
+h1, .gb-h1 {
+  font-family: var(--gb-font-display);
+  font-size: var(--gb-fs-4xl);
+  font-weight: var(--gb-fw-bold);
+  line-height: var(--gb-lh-tight);
+  color: var(--gb-fg-strong);
+  letter-spacing: -0.01em;
+}
+h2, .gb-h2 {
+  font-family: var(--gb-font-display);
+  font-size: var(--gb-fs-3xl);
+  font-weight: var(--gb-fw-bold);
+  line-height: var(--gb-lh-tight);
+  color: var(--gb-fg-strong);
+}
+h3, .gb-h3 {
+  font-size: var(--gb-fs-2xl);
+  font-weight: var(--gb-fw-semibold);
+  line-height: var(--gb-lh-snug);
+  color: var(--gb-fg-strong);
+}
+h4, .gb-h4 {
+  font-size: var(--gb-fs-xl);
+  font-weight: var(--gb-fw-semibold);
+  line-height: var(--gb-lh-snug);
+  color: var(--gb-fg-strong);
+}
+h5, .gb-h5 {
+  font-size: var(--gb-fs-lg);
+  font-weight: var(--gb-fw-semibold);
+  line-height: var(--gb-lh-snug);
+  color: var(--gb-fg-strong);
+}
+h6, .gb-h6 {
+  font-size: var(--gb-fs-md);
+  font-weight: var(--gb-fw-semibold);
+  line-height: var(--gb-lh-snug);
+  color: var(--gb-fg-strong);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+p, .gb-p {
+  font-size: var(--gb-fs-md);
+  line-height: var(--gb-lh-normal);
+  color: var(--gb-fg-default);
+}
+.gb-lead { font-size: var(--gb-fs-lg); color: var(--gb-fg-muted); }
+.gb-meta { font-size: var(--gb-fs-sm); color: var(--gb-fg-muted); }
+.gb-caption { font-size: var(--gb-fs-xs); color: var(--gb-fg-subtle); }
+.gb-mono, code {
+  font-family: var(--gb-font-mono);
+  font-size: 0.95em;
+  background: var(--gb-gray-100);
+  padding: 0.1em 0.35em;
+  border-radius: var(--gb-radius-base);
+}
+
+label, .gb-label {
+  font-size: var(--gb-fs-sm);
+  font-weight: var(--gb-fw-medium);
+  color: var(--gb-gray-700);
+}
+
+/* Italic species names (used throughout PlantsList/PlantProfileCard) */
+.gb-species { font-style: italic; color: var(--gb-fg-muted); font-size: var(--gb-fs-sm); }
+
+/* Pill/badge baseline */
+.gb-badge {
+  display: inline-flex; align-items: center; gap: 0.25rem;
+  font-size: var(--gb-fs-xs);
+  font-weight: var(--gb-fw-medium);
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--gb-radius-full);
+  border: 1px solid var(--gb-border);
+  background: var(--gb-gray-100);
+  color: var(--gb-gray-700);
+}
