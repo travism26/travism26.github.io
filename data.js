@@ -111,6 +111,33 @@ window.PORTFOLIO_DATA = {
   },
   featured: [
     {
+      id: "bbw",
+      name: "BBWorkflow",
+      tagline: "Event-driven bug-bounty agent stack",
+      summary: "Private agentic workflow engine for offensive security — coordinates specialized LLM agents across a 10-phase recon pipeline and a bounded exploit loop. Per-program SQLite knowledge base accumulates findings across runs; OOB integration catches blind-class vulns scanners miss.",
+      stack: ["Python", "Claude Code", "SQLite", "interactsh", "Nuclei"],
+      role: "Creator",
+      year: "2025",
+      status: "Private · in production",
+      stats: [
+        { label: "Recon phases", value: "10" },
+        { label: "Specialized agents", value: "6" },
+        { label: "Tool integrations", value: "40+" },
+      ],
+      bullets: [
+        "Two flagship pipelines: recon_persistent_workflow.py (per-program SQLite KB, accumulates findings across runs) and exploit_workflow.py (bounded LLM-driven test loop).",
+        "Persistent recon: 10 phases from subdomain enum → LLM analysis, with --from-kb seeding, --kb-only materialization, and stale/active row tracking that never deletes data.",
+        "Exploit loop: ADVANCE / RETEST / PIVOT / ESCALATE decisions per iteration, with convergence guarantees and a mid-loop research gate that spawns Claude subagents on stall signals.",
+        "Self-hosted interactsh integration for blind SSRF/XSS/SQLi/XXE — vuln classes signature scanners structurally cannot detect.",
+        "Caido + browser HAR seeding so authenticated, JS-only, and SPA endpoints aren't missed.",
+      ],
+      links: { github: "https://github.com/travism26" },
+      lang: "Python",
+      tags: ["AI Agents", "Security", "Workflow"],
+      accent: "green",
+      private: true,
+    },
+    {
       id: "adw",
       name: "Claude Code Agent Templates",
       tagline: "AI Developer Workflows (ADW)",

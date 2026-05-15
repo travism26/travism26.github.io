@@ -22,6 +22,7 @@ const IconGitHub = (p) => <Icon {...p} d={
 const IconArrow = (p) => <Icon {...p} d={<><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></>} />;
 const IconExt = (p) => <Icon {...p} d={<><path d="M15 3h6v6"/><path d="M10 14L21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></>} />;
 const IconMail = (p) => <Icon {...p} d={<><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></>} />;
+const IconLock = (p) => <Icon {...p} d={<><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></>} />;
 const IconSpark = (p) => <Icon {...p} d={<><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></>} />;
 const IconSend = (p) => <Icon {...p} d={<><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></>} />;
 
@@ -129,7 +130,10 @@ function FeatureCard({ p }) {
           <span>·</span>
           <span>{p.role}</span>
         </div>
-        <h3 className="fc-name">{p.name}</h3>
+        <h3 className="fc-name">
+          {p.name}
+          {p.private && <span className="fc-private">private</span>}
+        </h3>
         <div className="fc-tagline">{p.tagline}</div>
         <p className="fc-summary">{p.summary}</p>
         <ul className="fc-bullets">
@@ -139,9 +143,20 @@ function FeatureCard({ p }) {
           {p.stack.map((t) => <span className="tech-chip" key={t}>{t}</span>)}
         </div>
         <div className="fc-actions">
-          <a className="btn btn-primary" href={p.links.github} target="_blank" rel="noopener noreferrer">
-            <IconGitHub size={13} /> View on GitHub
-          </a>
+          {p.private ? (
+            <>
+              <span className="btn btn-locked">
+                <IconLock size={13} /> Private repo
+              </span>
+              <a className="btn btn-ghost" href={D.links.email}>
+                Request a walkthrough
+              </a>
+            </>
+          ) : (
+            <a className="btn btn-primary" href={p.links.github} target="_blank" rel="noopener noreferrer">
+              <IconGitHub size={13} /> View on GitHub
+            </a>
+          )}
         </div>
       </div>
 
@@ -162,6 +177,19 @@ function FeatureCard({ p }) {
 
 // pre-rendered "code" snippets per featured project
 const CODE_PREVIEWS = {
+  bbw: (
+    <>
+      <span className="c"># persistent recon — SQLite KB accumulates</span>{"\n"}
+      <span className="k">$</span> recon_persistent_workflow.py <span className="s">scopes/acme.yaml</span>{"\n"}
+      <span className="arrow">→</span> 10 phases · 412 hosts · 18 priority{"\n"}
+      <span className="ok">✓</span> KB merged · stale rows preserved{"\n"}{"\n"}
+      <span className="c"># exploit — bounded LLM test loop</span>{"\n"}
+      <span className="k">$</span> exploit_workflow.py --recon-id <span className="s">abc</span>{"\n"}
+      <span className="arrow">→</span> iter 1: PIVOT (idor → authz){"\n"}
+      <span className="arrow">→</span> iter 2: RETEST (verify blind SSRF){"\n"}
+      <span className="ok">✓</span> 3 confirmed · OOB callbacks logged
+    </>
+  ),
   adw: (
     <>
       <span className="c"># Plan → Build → Validate → Test → Review</span>{"\n"}
