@@ -17,7 +17,7 @@ window.PORTFOLIO_DATA = {
     email: "mailto:travis.martin266@protonmail.com",
     emailLabel: "travis.martin266@protonmail.com",
     linkedin: "https://linkedin.com/in/travismartin266",
-    blog: "https://travismartin266.wixsite.com/website/blog",
+    blog: "https://dev.to/rickjms",
   },
   experience: [
     {
@@ -111,14 +111,43 @@ window.PORTFOLIO_DATA = {
   },
   featured: [
     {
+      id: "adw",
+      name: "Agentic Developer Workflow",
+      tagline: "Autonomous SDLC harness for Claude Code",
+      summary: "My flagship. A phase-structured harness that drives an LLM through a full SDLC \u2014 research \u2192 plan \u2192 build \u2192 validate \u2192 test \u2192 review \u2192 document \u2014 with self-retrying validation and test phases and an opt-in deny-hook risk gate for unattended runs. ~18K lines of Python, zero-install via uv + PEP 723, no external database. Adopted by my whole team at work.",
+      stack: ["Python", "Claude Code", "uv / PEP 723", "git worktrees", "Rich"],
+      role: "Creator",
+      year: "2025",
+      status: "Private \u00b7 team-adopted at work",
+      stats: [
+        { label: "SDLC phases", value: "7" },
+        { label: "Python", value: "~18K LOC" },
+        { label: "Measured gain", value: "20\u201330%" },
+      ],
+      bullets: [
+        "Eval-driven development: every harness change is A/B-tested against frozen, vendored benchmark targets \u2014 a small tier-1 CLI and a realistic ~69K-LOC Express/TypeScript backend with Postgres and Redis.",
+        "Hybrid grading: deterministic code graders (test pass-ratio, behavioural acceptance oracles, diff size, wall-clock, token cost) plus a memoized LLM judge, with judge cost itemized separately from the agent under test.",
+        "Saturation defence: when easy tasks stop discriminating good changes from bad, harder ones are added \u2014 including a real, unplanted latent ORM defect whose root cause has no greppable keyword, so it grades genuine investigation depth.",
+        "Best-of-N: --attempts N runs independent build trajectories from one shared plan in isolated git worktrees, scores each on execution signal plus an LLM judge on diff-vs-spec, and applies only the winner \u2014 keeping loser transcripts for audit.",
+        "Dreaming: run transcripts are consolidated into a per-project memory store in a single LLM call, so the system carries forward what it learned instead of restarting cold each run.",
+        "Risk gate: a PreToolUse deny-hook that blocks destructive git, system-path rm and sudo before an unattended phase can reach them.",
+        "Opt-in split-pane TUI (Rich Live) showing live phase status beside a tail of the run log; auto-disables when stdout is not a TTY.",
+      ],
+      links: { github: "https://github.com/travism26" },
+      lang: "Python",
+      tags: ["AI Agents", "Evals", "DevTools"],
+      accent: "green",
+      private: true,
+    },
+    {
       id: "bbw",
       name: "BBWorkflow",
       tagline: "Event-driven bug-bounty agent stack",
-      summary: "Private agentic workflow engine for offensive security — coordinates specialized LLM agents across a 10-phase recon pipeline and a bounded exploit loop. Per-program SQLite knowledge base accumulates findings across runs; OOB integration catches blind-class vulns scanners miss.",
+      summary: "Personal agentic workflow engine for offensive security, run locally against authorized bug-bounty targets — coordinates specialized LLM agents across a 10-phase recon pipeline and a bounded exploit loop. Per-program SQLite knowledge base accumulates findings across runs; OOB integration catches blind-class vulns scanners miss.",
       stack: ["Python", "Claude Code", "SQLite", "interactsh", "Nuclei"],
       role: "Creator",
       year: "2025",
-      status: "Private · in production",
+      status: "Private · personal project",
       stats: [
         { label: "Recon phases", value: "10" },
         { label: "Specialized agents", value: "6" },
@@ -138,7 +167,7 @@ window.PORTFOLIO_DATA = {
       private: true,
     },
     {
-      id: "adw",
+      id: "adw-templates",
       name: "Claude Code Agent Templates",
       tagline: "AI Developer Workflows (ADW)",
       summary: "Language-specific templates and examples for the ADW framework — orchestrates AI agents through a complete SDLC pipeline: Plan → Build → Validate → Test → Review → Document. Three-layer architecture where only slash commands are language-specific.",
