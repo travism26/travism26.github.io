@@ -59,7 +59,7 @@ function Hero() {
       <div className="hero-left">
         <div className="hero-pill">
           <span className="dot" />
-          {D.identity.available ? "Available for new work · Q2 2026" : "Heads-down on a project"}
+          {D.identity.available ? "Available for new work" : "Heads-down on a project"}
         </div>
         <h1>
           Building <span className="accent">AI systems</span><br/>
@@ -153,9 +153,16 @@ function FeatureCard({ p }) {
               </a>
             </>
           ) : (
-            <a className="btn btn-primary" href={p.links.github} target="_blank" rel="noopener noreferrer">
-              <IconGitHub size={13} /> View on GitHub
-            </a>
+            <>
+              {p.links.play && (
+                <a className="btn btn-primary" href={p.links.play} target="_blank" rel="noopener noreferrer">
+                  <IconExt size={13} /> Play in browser
+                </a>
+              )}
+              <a className={`btn ${p.links.play ? "btn-ghost" : "btn-primary"}`} href={p.links.github} target="_blank" rel="noopener noreferrer">
+                <IconGitHub size={13} /> View on GitHub
+              </a>
+            </>
           )}
         </div>
       </div>
@@ -192,15 +199,25 @@ const CODE_PREVIEWS = {
   ),
   adw: (
     <>
-      <span className="c"># Plan → Build → Validate → Test → Review</span>{"\n"}
-      <span className="k">/install-adw</span>{"\n"}
-      <span className="c">→ detected: typescript · pnpm · vitest</span>{"\n"}
-      <span className="c">→ rewriting 8 commands…</span>{"\n"}
-      <span className="ok">✓</span> 0 leftover placeholders{"\n"}{"\n"}
-      <span className="k">/feature</span> <span className="s">"add OAuth login"</span>{"\n"}
-      <span className="arrow">→</span> spec.md{"\n"}
-      <span className="arrow">→</span> implementation{"\n"}
-      <span className="arrow">→</span> tests · review · docs
+      <span className="c"># research → plan → build → test → review</span>{"\n"}
+      <span className="k">$</span> travis_sdlc.py <span className="s">"Add export"</span> \{"\n"}
+      {"    "}--worktree --attempts <span className="s">3</span> --dream{"\n"}
+      <span className="arrow">→</span> best-of-3 · isolated worktrees{"\n"}
+      <span className="arrow">→</span> winner applied · losers kept{"\n"}
+      <span className="ok">✓</span> memory updated{"\n"}{"\n"}
+      <span className="k">$</span> run_eval.py run --all --trials <span className="s">3</span>{"\n"}
+      <span className="arrow">→</span> pass@3 · pass^3 · cost
+    </>
+  ),
+  frostmark: (
+    <>
+      <span className="c"># rules live in sim/ — no scene, no Input</span>{"\n"}
+      <span className="k">sim</span>.<span className="f">command</span>(cmd){"\n"}
+      <span className="k">sim</span>.<span className="f">step</span>()  <span className="c"># one 0.5 s tick</span>{"\n"}
+      <span className="k">sim</span>.<span className="f">drain_events</span>(){"\n"}{"\n"}
+      <span className="k">$</span> tools/check.sh{"\n"}
+      <span className="arrow">→</span> import · unit tests · smoke run{"\n"}
+      <span className="ok">✓</span> web export → GitHub Pages
     </>
   ),
   "spring-ai": (
@@ -238,7 +255,7 @@ function Featured() {
     <section className="section shell" id="work">
       <header className="section-head">
         <div>
-          <div className="section-eyebrow">featured · 03</div>
+          <div className="section-eyebrow">featured · {String(D.featured.length).padStart(2, "0")}</div>
           <h2 className="section-title">What I'm building</h2>
           <p className="section-sub">A few projects I'd actually want to talk about. Real code, real users, real READMEs.</p>
         </div>
@@ -271,7 +288,7 @@ function Projects() {
           <p className="section-sub">Side projects, learning repos, and experiments. The full feed lives on GitHub.</p>
         </div>
         <a className="btn btn-ghost" href={D.links.github} target="_blank" rel="noopener noreferrer">
-          <IconGitHub size={13} /> See all 107
+          <IconGitHub size={13} /> See all 87
         </a>
       </header>
 
