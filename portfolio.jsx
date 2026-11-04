@@ -257,7 +257,7 @@ function Featured() {
         <div>
           <div className="section-eyebrow">featured · {String(D.featured.length).padStart(2, "0")}</div>
           <h2 className="section-title">What I'm building</h2>
-          <p className="section-sub">A few projects I'd actually want to talk about. Real code, real users, real READMEs.</p>
+          <p className="section-sub">A few projects I'd be glad to talk about, with code you can read.</p>
         </div>
       </header>
       <div className="featured-stack">
@@ -335,7 +335,7 @@ function Skills() {
         <div>
           <div className="section-eyebrow">stack</div>
           <h2 className="section-title">What I work with</h2>
-          <p className="section-sub">A pragmatic, polyglot toolkit. I'll pick up whatever fits the problem — but here's where I'm sharpest.</p>
+          <p className="section-sub">A pragmatic, polyglot toolkit. I'll pick up whatever fits the problem — but here's what I use most.</p>
         </div>
       </header>
       <div className="skills-grid">
@@ -368,7 +368,7 @@ function About() {
         <div className="about-copy">
           <p>{D.identity.longBlurb}</p>
           <p>The throughline of my career has been <strong>secure, scalable backends</strong> — XDR correlation engines at IBM, IAM platforms on AKS at Quantiphi, AI pipelines at Postilize, serverless workflows at Baseline. I gravitate toward the unglamorous infra: testing frameworks, CI/CD, observability, the bits that make production survive.</p>
-          <p>The <strong>AI layer is what I'm sharpest on right now</strong>. I've built agentic dev frameworks that automate SDLC phases, LLM agents that integrate Figma + browser automation, and reference implementations for putting LLMs inside Spring Boot. I lead AI adoption inside engineering teams and get measurable productivity gains out of it.</p>
+          <p>The <strong>AI layer is my main focus right now</strong>. I've built agentic dev frameworks that automate SDLC phases, LLM agents that integrate Figma + browser automation, and reference implementations for putting LLMs inside Spring Boot.</p>
           <p>Outside of code: I write at my <a href={D.links.blog} target="_blank" rel="noopener noreferrer">blog</a>, run a small home garden (inspiration for GrowBuddy), and obsess over secure-coding defaults.</p>
         </div>
         <div className="now-card">
@@ -392,7 +392,7 @@ function Contact() {
     <>
       <section className="contact shell" id="contact">
         <h2>Let's <span className="accent">build something</span>.</h2>
-        <p>Best for: AI tooling, agentic workflows, production AI integration, and the unglamorous infra that makes LLM features actually work.</p>
+        <p>Best for: AI tooling, agentic workflows, production AI integration, and the infrastructure behind LLM features.</p>
         <div className="contact-actions">
           <a className="btn btn-primary" href={D.links.email}>
             <IconMail size={14} /> {D.links.emailLabel}
