@@ -10,7 +10,7 @@ window.PORTFOLIO_DATA = {
     location: "Fredericton, NB",
     available: true,
     blurb: "Senior software engineer specializing in backend development, microservice architecture, and secure coding. Currently building AI-driven development frameworks and LLM-powered agents at Quantiphi, on top of a decade in cloud, distributed systems, and cybersecurity. My agentic developer workflow harness, with evals, best-of-N builds and agent memory, is open source.",
-    longBlurb: "I've been writing production software for 13+ years — XDR correlation engines at IBM, IAM platforms at Quantiphi, AI pipelines at Postilize, serverless workflows at Baseline. The throughline is the same: pragmatic backend systems, secure by default, that survive contact with reality. These days I spend most of my time on the AI tooling layer — agentic SDLC frameworks, eval-driven harness engineering, and putting Claude Code-style automation in front of real engineering teams (with measurable 20–30% productivity gains). I also build in the open: the ADW harness is public on GitHub, and I ship side projects like a browser-playable game and an offline language-learning app.",
+    longBlurb: "I've been writing production software for 13+ years — XDR correlation engines at IBM, IAM platforms at Quantiphi, AI pipelines at Postilize, serverless workflows at Baseline. The throughline is the same: backend systems that are secure by default and hold up in production. These days I spend most of my time on the AI tooling layer — agentic SDLC frameworks, eval-driven harness engineering, and Claude Code-style automation for engineering workflows. I also build in the open: the ADW harness is public on GitHub, and I ship side projects like a browser-playable game and an offline language-learning app.",
   },
   links: {
     github: "https://github.com/travism26",
@@ -29,7 +29,7 @@ window.PORTFOLIO_DATA = {
       bullets: [
         "Designed and built an AI-powered agentic development framework automating spec generation, implementation guidance, and UI validation across the SDLC.",
         "Built custom LLM-driven agents integrating Figma and browser automation to plan features and validate UI against design specs.",
-        "Drove team-wide AI adoption — internal talks, prompt engineering practices — with ~20–30% measurable productivity gains.",
+        "Gave internal talks and shared prompt engineering practices on AI tooling.",
         "Designed Java Spring Boot microservices on Azure Kubernetes Service supporting high-volume IAM operations.",
         "Architected event-driven systems with Kafka and Azure Event Hub for asynchronous service communication.",
         "Cut end-to-end test time 75% (40min → 10min) via parallelization and pipeline optimization.",
@@ -56,7 +56,7 @@ window.PORTFOLIO_DATA = {
       tag: "AI Pipelines · Backend",
       bullets: [
         "Cut endpoint load times 30s → under 10s by offloading heavy work to background jobs (ReactJS + Redis caching).",
-        "Introduced Jest and lifted coverage from 0% to 70%, eliminating regressions and reducing bugs ~90%.",
+        "Introduced Jest and lifted coverage from 0% to 70%, reducing regressions.",
         "Built AI-powered pipelines for web scraping, data parsing, and LLM-driven personalized content generation.",
         "Engineered a custom feature flag framework enabling controlled rollouts, A/B tests, and premium-feature monetization.",
         "Mentored juniors and new hires on code review, testing strategy, and architecture.",
@@ -85,8 +85,8 @@ window.PORTFOLIO_DATA = {
       bullets: [
         "Built Golang-based log monitoring scripts for defect detection.",
         "Implemented GitLab CI/CD pipelines, automating build and deployment.",
-        "Created robust testing framework integrated to CI/CD — highest quality release to date.",
-        "Saved a $10M customer deal by traveling on-site to repair critical infrastructure and act as client advocate.",
+        "Created a testing framework integrated with CI/CD.",
+        "Traveled on-site to repair critical customer infrastructure and act as client advocate.",
       ],
     },
     {
@@ -114,7 +114,7 @@ window.PORTFOLIO_DATA = {
       id: "adw",
       name: "Agentic Developer Workflow",
       tagline: "Open-source SDLC harness for Claude Code",
-      summary: "My flagship, now public. A harness that drives Claude Code through a spec-driven SDLC \u2014 research \u2192 plan \u2192 build \u2192 validate \u2192 test \u2192 review \u2192 document \u2014 and measures its own changes with evals instead of vibes. Best-of-N build selection, git-worktree isolation, a file-based agent memory layer and a risk gate for unattended runs. ~19K lines of Python (excluding tests), zero-install via uv + PEP 723, no external database.",
+      summary: "My main project, now public. A harness that drives Claude Code through a spec-driven SDLC \u2014 research \u2192 plan \u2192 build \u2192 validate \u2192 test \u2192 review \u2192 document \u2014 and measures its own changes with evals instead of by feel. Best-of-N build selection, git-worktree isolation, a file-based agent memory layer and a risk gate for unattended runs. ~19K lines of Python (excluding tests), zero-install via uv + PEP 723, no external database.",
       stack: ["Python", "Claude Code", "Claude Agent SDK", "uv / PEP 723", "git worktrees", "GitHub Actions"],
       role: "Creator",
       year: "2025\u20132026",
@@ -183,7 +183,7 @@ window.PORTFOLIO_DATA = {
         "Two flagship pipelines: recon_persistent_workflow.py (per-program SQLite KB, accumulates findings across runs) and exploit_workflow.py (bounded LLM-driven test loop).",
         "Persistent recon: 10 phases from subdomain enum → LLM analysis, with --from-kb seeding, --kb-only materialization, and stale/active row tracking that never deletes data.",
         "Exploit loop: ADVANCE / RETEST / PIVOT / ESCALATE decisions per iteration, with convergence guarantees and a mid-loop research gate that spawns Claude subagents on stall signals.",
-        "Self-hosted interactsh integration for blind SSRF/XSS/SQLi/XXE — vuln classes signature scanners structurally cannot detect.",
+        "Self-hosted interactsh integration for blind SSRF/XSS/SQLi/XXE — vuln classes signature scanners typically miss.",
         "Caido + browser HAR seeding so authenticated, JS-only, and SPA endpoints aren't missed.",
       ],
       links: { github: "https://github.com/travism26" },
@@ -220,8 +220,8 @@ window.PORTFOLIO_DATA = {
     {
       id: "spring-ai",
       name: "Spring AI + OpenRouter",
-      tagline: "Production AI integration",
-      summary: "Spring Boot 3.5 service demonstrating how to put real LLM capability inside an enterprise Java backend — JWT auth, PostgreSQL persistence, WebSocket streaming, Caffeine-cached responses, hundreds of models via one API.",
+      tagline: "AI integration in Spring Boot",
+      summary: "Spring Boot 3.5 service demonstrating how to put LLM capability inside an enterprise Java backend — JWT auth, PostgreSQL persistence, WebSocket streaming, Caffeine-cached responses, hundreds of models via one API.",
       stack: ["Java 17", "Spring Boot 3.5", "Spring AI 1.1", "PostgreSQL", "JWT"],
       role: "Creator",
       year: "2025",
@@ -392,6 +392,6 @@ window.PORTFOLIO_DATA = {
     { value: "13+", label: "Years shipping software" },
     { value: "75%", label: "E2E test time reduction" },
     { value: "10×", label: "Doc processing speedup" },
-    { value: "AI", label: "Where I'm sharpest" },
+    { value: "AI", label: "Current focus" },
   ],
 };
