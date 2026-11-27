@@ -5,6 +5,10 @@
 // module, so a content edit needs no edit here. To add a check, write a
 // function that takes the loaded page and the content and returns a list of
 // failure messages, and add it to `checks`.
+//
+// One check is about the repository and not about the page: it searches the
+// tracked source (see tracked-source.js), and runs only when checkPage is
+// given that source.
 
 import siteContent from "../src/data.js";
 
@@ -22,8 +26,8 @@ export const checks = [
   { name: "shows no stale years figure", run: staleYearsOnPage },
   {
     name: "tracked source holds no stale years figure",
-    run: staleYearsInSource,
-    skip: (page) => (page.trackedFiles ? null : "this page source comes with no tracked source"),
+    run: (page, content, trackedFiles) => staleYearsInSource(trackedFiles),
+    skip: (trackedFiles) => (trackedFiles ? null : "no tracked source was given to search"),
   },
   { name: "shows no loading splash", run: loadingSplash },
   { name: "loads no script from a third-party host", run: thirdPartyScripts },
@@ -33,13 +37,18 @@ export const checks = [
 ];
 
 // One result for each check: { name, failures }, or { name, failures: [],
-// skipped: reason } for a check that has nothing to look at in this source.
-export async function checkPage(source, content = siteContent) {
+// skipped: reason } for a check that was given nothing to look at.
+//
+// `trackedFiles` resolves to the tracked source to search with the page, as a
+// list of { path, text }. Leave it out when there is none to search.
+export async function checkPage(source, { content = siteContent, trackedFiles } = {}) {
   const page = await loadPage(source);
   const report = [];
   for (const { name, run, skip } of checks) {
-    const skipped = skip?.(page);
-    report.push(skipped ? { name, failures: [], skipped } : { name, failures: await run(page, content) });
+    const skipped = skip?.(trackedFiles);
+    report.push(
+      skipped ? { name, failures: [], skipped } : { name, failures: await run(page, content, trackedFiles) },
+    );
   }
   return report;
 }
@@ -52,7 +61,6 @@ export async function checkPage(source, content = siteContent) {
 //   assets        every URL the HTML loads as part of the page (not links to follow)
 //   isLocal       whether a URL the page references is served by the site itself
 //   read          the text of a local URL, or null when it does not resolve
-//   trackedFiles  the tracked source the page was built from, when the source has it
 async function loadPage(source) {
   const html = (await source.html()).replace(/<!--[\s\S]*?-->/g, "");
   const base = new URL(`${source.origin ?? "http://site.invalid"}/`);
@@ -85,7 +93,6 @@ async function loadPage(source) {
     assets: [...assets],
     isLocal,
     read: (reference) => source.asset(new URL(reference, base).pathname),
-    trackedFiles: source.trackedFiles,
   };
 }
 
@@ -192,9 +199,9 @@ function staleYearsOnPage(page) {
 // and plus signs, and can spell a figure by chance.
 const NOT_SEARCHED = new Set(["package-lock.json"]);
 
-async function staleYearsInSource(page) {
+async function staleYearsInSource(trackedFiles) {
   const failures = [];
-  for (const { path, text } of await page.trackedFiles()) {
+  for (const { path, text } of await trackedFiles()) {
     if (NOT_SEARCHED.has(path)) continue;
     for (const { figure, index, around } of staleYearsIn(text)) {
       const line = text.slice(0, index).split("\n").length;

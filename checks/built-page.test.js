@@ -10,15 +10,18 @@ import { before, describe, test } from "node:test";
 
 import { checkPage, checks } from "./page-checks.js";
 import { directorySource, urlSource } from "./page-sources.js";
+import { trackedFiles } from "./tracked-source.js";
 
-const source = process.env.CHECK_URL
-  ? urlSource(process.env.CHECK_URL)
-  : directorySource(process.env.CHECK_DIR ?? "dist");
+// A directory is build output from this checkout, so the checkout's tracked
+// source is searched with it. A served site is checked on its own.
+const checked = process.env.CHECK_URL
+  ? { source: urlSource(process.env.CHECK_URL) }
+  : { source: directorySource(process.env.CHECK_DIR ?? "dist"), trackedFiles };
 
-describe(`built page at ${source.name}`, () => {
+describe(`built page at ${checked.source.name}`, () => {
   let report;
   before(async () => {
-    report = await checkPage(source);
+    report = await checkPage(checked.source, { trackedFiles: checked.trackedFiles });
   });
 
   for (const { name } of checks) {
