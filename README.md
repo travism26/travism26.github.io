@@ -102,8 +102,10 @@ CHECK_DIR=some/dir npm run test:smoke
 
 ## Deploying
 
-The workflow in `.github/workflows/deploy.yml` builds every pull request and
-runs the checks and the browser smoke test on the build. On pushes to `main`,
-and when run by hand, it then deploys the build to GitHub Pages and runs the
-checks against the live site. If the build, a check or the smoke test fails,
-nothing is deployed.
+The workflow in `.github/workflows/deploy.yml` builds the site and runs the
+checks and the browser smoke test on the build: for every pull request, for
+every push to `main`, and whenever it is run by hand. Only a run on `main`,
+whether a push or a run by hand started it, then deploys the build to GitHub
+Pages and runs the checks against the live site. A run by hand on any other
+branch or on a tag stops after the checks, as a pull request does. If the
+build, a check or the smoke test fails, nothing is deployed.
