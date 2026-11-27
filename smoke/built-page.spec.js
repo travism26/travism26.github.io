@@ -9,15 +9,15 @@
 
 import { expect, test } from "@playwright/test";
 
-import D from "../src/data.js";
+import siteContent from "../src/data.js";
 import { serveDirectory } from "./serve-directory.js";
 
 // The one filter that is not a tag. Its label is part of the page, not of the
 // content module.
 const SHOW_ALL = "All";
 
-const tags = [...new Set(D.projects.flatMap((project) => project.tags))];
-const taggedWith = (tag) => D.projects.filter((project) => project.tags.includes(tag));
+const tags = [...new Set(siteContent.projects.flatMap((project) => project.tags))];
+const taggedWith = (tag) => siteContent.projects.filter((project) => project.tags.includes(tag));
 
 let site;
 
@@ -35,7 +35,7 @@ function projectCard(page, project) {
 }
 
 async function expectProjectCards(page, shown) {
-  for (const project of D.projects) {
+  for (const project of siteContent.projects) {
     if (shown.includes(project)) {
       await expect(projectCard(page, project), `card for ${project.name}`).toBeVisible();
     } else {
@@ -72,13 +72,13 @@ test("the page becomes interactive and logs no errors", async ({ page }) => {
   await page.goto(site.url);
 
   await test.step("every project card is shown at first", async () => {
-    await expectProjectCards(page, D.projects);
+    await expectProjectCards(page, siteContent.projects);
   });
 
   // A tag every project carries would leave the list as it is, and the steps
   // below would pass on a page that never became interactive.
   expect(
-    tags.some((tag) => taggedWith(tag).length < D.projects.length),
+    tags.some((tag) => taggedWith(tag).length < siteContent.projects.length),
     "at least one filter tag leaves a project out",
   ).toBe(true);
 
@@ -91,7 +91,7 @@ test("the page becomes interactive and logs no errors", async ({ page }) => {
 
   await test.step(`selecting "${SHOW_ALL}" restores the full list`, async () => {
     await page.getByRole("button", { name: SHOW_ALL, exact: true }).click();
-    await expectProjectCards(page, D.projects);
+    await expectProjectCards(page, siteContent.projects);
   });
 
   expect(errors, "errors the page logged").toEqual([]);

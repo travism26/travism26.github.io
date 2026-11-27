@@ -4,7 +4,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { checkPage } from "./page-checks.js";
+import { checkPage, YEARS_FIGURE, YEARS_LABEL } from "./page-checks.js";
 
 // The content the in-memory pages are checked against.
 const content = {
@@ -22,8 +22,8 @@ const content = {
 const cleanRoot = `
   <article><div>2019 — Present</div><h3>Engineer · Build Tools</h3><div>Marsh &amp; Sons <span>· Lagos</span></div></article>
   <article><div>2015 — 2019</div><h3>Developer</h3><div>O&#x27;Neil Labs <span>· Lagos</span></div></article>
-  <div><div><div>10+</div><div>Years shipping software</div></div><div><div>75%</div><div>Faster tests</div></div></div>
-  <div>repos · 10+</div>
+  <div><div><div>${YEARS_FIGURE}</div><div>${YEARS_LABEL}</div></div><div><div>75%</div><div>Faster tests</div></div></div>
+  <div>repos · ${YEARS_FIGURE}</div>
   <article><h3>Fast → Faster<span>private</span></h3></article>
   <a href="https://example.com/parser"><div>10× Parser</div></a>
   <a href="https://example.com/quoted"><div>The &quot;Quoted&quot; Tool</div></a>
@@ -45,7 +45,7 @@ const cleanPage = {
     "/assets/index-abc123.js": 'console.log("Minified React error #")',
   },
   tracked: {
-    "src/data.js": 'export default { numbers: [{ value: "10+", label: "Years shipping software" }] };',
+    "src/data.js": `export default { numbers: [{ value: "${YEARS_FIGURE}", label: "${YEARS_LABEL}" }] };`,
   },
 };
 
@@ -276,15 +276,19 @@ test("a project that is both featured and listed has to be shown twice", async (
   assert.match(failures[0], /listed/);
 });
 
+const yearsTileCheck = `the "${YEARS_LABEL}" tile reads "${YEARS_FIGURE}"`;
+
 test("a page without the years tile is reported", async () => {
-  const page = withRoot(cleanPage, cleanRoot.replace("Years shipping software", "Years"));
-  const failures = await failuresOf('the "Years shipping software" tile reads "10+"', page);
+  const page = withRoot(cleanPage, cleanRoot.replace(YEARS_LABEL, "Years"));
+  const failures = await failuresOf(yearsTileCheck, page);
   assert.equal(failures.length, 1);
 });
 
 test("a years tile with another figure is reported, even when the right figure is elsewhere on the page", async () => {
-  const page = withRoot(cleanPage, cleanRoot.replace("<div>10+</div>", "<div>9+</div>"));
-  const failures = await failuresOf('the "Years shipping software" tile reads "10+"', page);
+  const aYearFewer = `${parseInt(YEARS_FIGURE, 10) - 1}+`;
+  const page = withRoot(cleanPage, cleanRoot.replace(`<div>${YEARS_FIGURE}</div>`, `<div>${aYearFewer}</div>`));
+  assert.ok(page.html.includes(YEARS_FIGURE), "the right figure is still on the page");
+  const failures = await failuresOf(yearsTileCheck, page);
   assert.equal(failures.length, 1);
 });
 
@@ -321,7 +325,7 @@ const awkwardPages = {
 
 for (const [writing, rootHtml] of Object.entries(awkwardPages)) {
   test(`content is recognised in a page written with ${writing}`, async () => {
-    const tile = "<div><div>10+</div><div>Years shipping software</div></div>";
+    const tile = `<div><div>${YEARS_FIGURE}</div><div>${YEARS_LABEL}</div></div>`;
     const report = await reportOf(withRoot(cleanPage, rootHtml + tile), awkwardContent);
     assert.deepEqual(report.flatMap((result) => result.failures), []);
   });

@@ -12,11 +12,12 @@
 
 import siteContent from "../src/data.js";
 
-// The one value the checks pin instead of reading it from the content: how
-// long the owner has been shipping software. When the figure moves on, it
-// changes here as well as in the content.
-const YEARS_FIGURE = "10+";
-const YEARS_LABEL = "Years shipping software";
+// What the checks pin instead of reading it from the content: how long the
+// owner has been shipping software, and the label of the tile that says so.
+// When either moves on, it changes here as well as in the content, and
+// nowhere else in the checks.
+export const YEARS_FIGURE = "10+";
+export const YEARS_LABEL = "Years shipping software";
 
 export const checks = [
   { name: "shows the owner's name", run: ownerName },
