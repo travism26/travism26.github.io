@@ -1,6 +1,6 @@
 /* global React, ReactDOM */
 
-const { useState, useEffect, useMemo, useRef } = React;
+const { useState, useMemo, useRef } = React;
 const D = window.PORTFOLIO_DATA;
 
 // ───────────────────────────────────────────────────────────────
@@ -414,70 +414,6 @@ function Contact() {
 }
 
 // ───────────────────────────────────────────────────────────────
-// Tweaks
-// ───────────────────────────────────────────────────────────────
-function PortfolioTweaks() {
-  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-    "theme": "dark",
-    "accent": "green",
-    "density": "default",
-    "showGridBg": false
-  }/*EDITMODE-END*/;
-
-  const [tweaks, setTweak] = window.useTweaks(TWEAK_DEFAULTS);
-
-  // Apply theme + density to root
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", tweaks.theme);
-    document.documentElement.setAttribute("data-density", tweaks.density);
-    document.body.classList.toggle("grid-bg", !!tweaks.showGridBg);
-    // accent palette swap
-    const accents = {
-      green:  ["#22c55e", "#4ade80", "#15803d", "rgba(34,197,94,0.12)"],
-      cyan:   ["#22d3ee", "#67e8f9", "#0e7490", "rgba(34,211,238,0.12)"],
-      amber:  ["#f59e0b", "#fbbf24", "#b45309", "rgba(245,158,11,0.12)"],
-      violet: ["#a78bfa", "#c4b5fd", "#6d28d9", "rgba(167,139,250,0.12)"],
-    };
-    const [a, a2, ad, ab] = accents[tweaks.accent] || accents.green;
-    document.documentElement.style.setProperty("--p-accent", a);
-    document.documentElement.style.setProperty("--p-accent-2", a2);
-    document.documentElement.style.setProperty("--p-accent-deep", ad);
-    document.documentElement.style.setProperty("--p-accent-bg", ab);
-  }, [tweaks]);
-
-  // Pass tweaks down so hero can switch modes
-  window.__currentTweaks = tweaks;
-  // Trigger re-render of root when tweaks change
-  useEffect(() => {
-    window.dispatchEvent(new CustomEvent("tweakschange", { detail: tweaks }));
-  }, [tweaks]);
-
-  const { TweaksPanel, TweakSection, TweakRadio, TweakColor, TweakToggle } = window;
-
-  return (
-    <TweaksPanel title="Tweaks">
-      <TweakSection label="Surface">
-        <TweakRadio label="Theme" value={tweaks.theme} onChange={(v) => setTweak("theme", v)}
-          options={[{ value: "dark", label: "Dark" }, { value: "light", label: "Light" }]} />
-        <TweakRadio label="Density" value={tweaks.density} onChange={(v) => setTweak("density", v)}
-          options={[{ value: "default", label: "Default" }, { value: "cozy", label: "Cozy" }, { value: "dense", label: "Dense" }]} />
-        <TweakToggle label="Grid background" value={tweaks.showGridBg} onChange={(v) => setTweak("showGridBg", v)} />
-      </TweakSection>
-
-      <TweakSection label="Accent">
-        <window.TweakSelect label="Brand color" value={tweaks.accent} onChange={(v) => setTweak("accent", v)}
-          options={[
-            { value: "green", label: "Green (default)" },
-            { value: "cyan", label: "Cyan" },
-            { value: "amber", label: "Amber" },
-            { value: "violet", label: "Violet" },
-          ]} />
-      </TweakSection>
-    </TweaksPanel>
-  );
-}
-
-// ───────────────────────────────────────────────────────────────
 // Root
 // ───────────────────────────────────────────────────────────────
 // ───────────────────────────────────────────────────────────────
@@ -544,7 +480,6 @@ function App() {
         <About />
         <Contact />
       </main>
-      <PortfolioTweaks />
     </>
   );
 }
