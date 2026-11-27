@@ -11,7 +11,7 @@ You need Node 22 (the version is pinned in `.nvmrc`).
 npm ci           # install the dependencies pinned in package-lock.json
 npm run dev      # run the site locally with live reload
 npm run build    # build the production site into dist/
-npm test         # check the built page in dist/ (build first)
+npm test         # run the checks' own tests and check the built page in dist/ (build first)
 npm run preview  # serve dist/ locally
 
 npx playwright install chromium  # once: download the browser for the smoke test
@@ -29,7 +29,7 @@ npm run test:smoke               # load the built page in dist/ in Chromium (bui
 - `index.html` is the page template Vite builds from. Its root element is
   empty; `vite.config.js` fills it with the rendered page, in the build and on
   the dev server alike.
-- `checks/` holds the built-page checks.
+- `checks/` holds the built-page checks and the tests that prove them.
 - `smoke/` holds the browser smoke test. `playwright.config.js` configures it.
 
 ## Pre-rendering
@@ -41,7 +41,9 @@ browser-only globals such as `window` while rendering.
 
 ## Checks
 
-`npm test` reads the build output and fails if the page:
+`npm test` does two things. It runs the checks' own tests, which prove each
+check against small pages held in memory and need no build. And it reads the
+build output and fails if the page:
 
 - does not show the owner's name, every experience entry (company, role and
   period) and every featured and listed project title from `src/data.js`;
@@ -56,8 +58,9 @@ It also fails if one of the older years figures is anywhere in the tracked
 source.
 
 What the page should say is read from `src/data.js`, and compared with the text
-a reader sees, so a content edit needs no edit to the checks. The one exception
-is the years figure, which is pinned in `checks/page-checks.js`.
+a reader sees, so a content edit needs no edit to the checks. The exceptions
+are the years figure and the label of its tile, which are both pinned in
+`checks/page-checks.js`.
 
 An experience entry's company, role and period, and a project's title, each
 have to begin a line of that text, once for every time `src/data.js` has them.
@@ -68,10 +71,12 @@ together as one entry, and a title that also begins some other line of the page
 (a project called "Security" would match the filter of that name) passes with
 its card gone.
 
-The same checks can run against a served copy of the site. The tracked-source
-check is skipped there.
+The build output is read from `dist/`, or from the directory `CHECK_DIR` names.
+The same checks can also run against a served copy of the site. The
+tracked-source check is skipped there.
 
 ```sh
+CHECK_DIR=some/dir npm test
 CHECK_URL=https://travism26.github.io/ npm test
 ```
 
@@ -90,8 +95,8 @@ Chromium with [Playwright](https://playwright.dev/) and fails if:
 - the main heading is not visible with JavaScript disabled.
 
 The site has no favicon, and Chromium logs the missing `/favicon.ico` when it
-runs with a window. That one message is not counted as an error; a failed load
-of anything else is.
+runs with a window or in its newer headless mode. That one message is not
+counted as an error; a failed load of anything else is.
 
 Playwright downloads its own Chromium; `npx playwright install chromium` does
 that once per Playwright version. To test a directory other than `dist/`:
