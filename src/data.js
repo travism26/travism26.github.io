@@ -1,7 +1,7 @@
 // Travis Martin — portfolio data
 // Pulled from real travism26 GitHub repos + resume.
 
-window.PORTFOLIO_DATA = {
+export default {
   identity: {
     name: "Travis Martin",
     handle: "travism26",

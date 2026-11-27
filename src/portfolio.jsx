@@ -1,7 +1,6 @@
-/* global React, ReactDOM */
+import { useMemo, useState } from "react";
 
-const { useState, useMemo, useRef } = React;
-const D = window.PORTFOLIO_DATA;
+import D from "./data.js";
 
 // ───────────────────────────────────────────────────────────────
 // Tiny inline icons (Lucide-stroke style, no external dep)
@@ -467,7 +466,7 @@ function Experience() {
   );
 }
 
-function App() {
+export default function App() {
   return (
     <>
       <Nav />
@@ -483,6 +482,3 @@ function App() {
     </>
   );
 }
-
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<App />);
