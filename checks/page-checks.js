@@ -46,7 +46,8 @@ export async function checkPage(source, content = siteContent) {
 
 // The page as the checks see it:
 //   html          the HTML, comments removed
-//   text          the text a reader of the page sees, each run of space as one space
+//   lines         the text a reader of the page sees, as the lines it is set in
+//   text          the same text in one piece, each run of space as one space
 //   scripts       every script the page loads: { url, type, body }
 //   assets        every URL the HTML loads as part of the page (not links to follow)
 //   isLocal       whether a URL the page references is served by the site itself
@@ -74,9 +75,12 @@ async function loadPage(source) {
     if (preloadsScript) scripts.push({ url: href, type: "", body: "" });
   }
 
+  const lines = readableLines(markup);
+
   return {
     html,
-    text: readableText(markup),
+    lines,
+    text: lines.join(" "),
     scripts,
     assets: [...assets],
     isLocal,
@@ -90,7 +94,7 @@ function ownerName(page, content) {
 }
 
 function experienceEntries(page, content) {
-  return missingText(
+  return missingLines(
     page,
     content.experience.flatMap(({ company, role, period }) => [
       [`the company of the ${role} entry (${period})`, company],
@@ -101,7 +105,7 @@ function experienceEntries(page, content) {
 }
 
 function projectTitles(page, content) {
-  return missingText(page, [
+  return missingLines(page, [
     ...content.featured.map(({ name }) => ["the featured project", name]),
     ...content.projects.map(({ name }) => ["the listed project", name]),
   ]);
@@ -112,6 +116,43 @@ function missingText(page, expected) {
   return expected
     .filter(([, text]) => !page.text.includes(collapseSpace(text)))
     .map(([description, text]) => `the page does not show ${description}: "${text}"`);
+}
+
+// The failures for the [description, text] pairs the page does not show. A
+// text is shown where a line of the page begins with it: a title in the middle
+// of a sentence is not the title of an entry. Each pair needs a line of its
+// own, so a text the content has twice has to be on the page twice.
+function missingLines(page, expected) {
+  const descriptionsOf = new Map();
+  for (const [description, written] of expected) {
+    const text = collapseSpace(written);
+    descriptionsOf.set(text, [...(descriptionsOf.get(text) ?? []), description]);
+  }
+
+  // The longest texts take their lines first: a line that begins with
+  // "Engineer (Contract)" also begins with "Engineer", and must be left for
+  // the text it spells out in full.
+  const unclaimed = [...page.lines];
+  const shownOf = new Map();
+  for (const text of [...descriptionsOf.keys()].sort((a, b) => b.length - a.length)) {
+    let shown = 0;
+    while (shown < descriptionsOf.get(text).length) {
+      const line = unclaimed.findIndex((candidate) => candidate.startsWith(text));
+      if (line === -1) break;
+      unclaimed.splice(line, 1);
+      shown += 1;
+    }
+    shownOf.set(text, shown);
+  }
+
+  return [...descriptionsOf]
+    .filter(([text, descriptions]) => shownOf.get(text) < descriptions.length)
+    .map(([text, descriptions]) =>
+      descriptions.length === 1
+        ? `the page has no line of its own for ${descriptions[0]}: "${text}"`
+        : `the page shows only ${shownOf.get(text)} of the ${descriptions.length} lines that should begin with ` +
+          `"${text}": ${descriptions.join("; ")}`,
+    );
 }
 
 // A tile is a figure with its label beside it, in either order.
@@ -229,20 +270,27 @@ const SCRIPT_ELEMENT = new RegExp(`<script\\b${ATTRIBUTES}>([\\s\\S]*?)</script\
 const START_TAG = new RegExp(`<([a-z][a-z0-9-]*)\\b${ATTRIBUTES}>`, "gi");
 const ANY_TAG = new RegExp(`</?([a-z][a-z0-9-]*)\\b${ATTRIBUTES}>`, "gi");
 
-// The text a reader of the page sees: the body with its tags removed and its
-// character references decoded. `markup` is the HTML without its comments and
-// scripts. Tags that flow within a line of text vanish; any other tag
-// separates the text on either side of it.
+// The text a reader of the page sees, line by line: the body with its tags
+// removed and its character references decoded. `markup` is the HTML without
+// its comments and scripts. Tags that flow within a line of text vanish; any
+// other tag ends the line.
 const UNSEEN_ELEMENTS = /<(head|style)\b[^>]*>[\s\S]*?<\/\1\s*>|<!doctype[^>]*>/gi;
 const TEXT_LEVEL_TAGS = new Set(
   "a abbr b bdi bdo cite code data dfn em i kbd mark q s samp small span strong sub sup time u var wbr".split(" "),
 );
 
-function readableText(markup) {
-  const text = markup
-    .replace(UNSEEN_ELEMENTS, " ")
-    .replace(ANY_TAG, (_, tag) => (TEXT_LEVEL_TAGS.has(tag.toLowerCase()) ? "" : " "));
-  return collapseSpace(decodeCharacterReferences(text));
+// Stands for the end of a line until the text is split. The character cannot
+// be written in HTML, and any the markup holds anyway is read as a space.
+const LINE_END = "\u0000";
+
+function readableLines(markup) {
+  return markup
+    .replaceAll(LINE_END, " ")
+    .replace(UNSEEN_ELEMENTS, LINE_END)
+    .replace(ANY_TAG, (_, tag) => (TEXT_LEVEL_TAGS.has(tag.toLowerCase()) ? "" : LINE_END))
+    .split(LINE_END)
+    .map((line) => collapseSpace(decodeCharacterReferences(line)))
+    .filter(Boolean);
 }
 
 function collapseSpace(text) {

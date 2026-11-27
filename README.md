@@ -59,6 +59,15 @@ What the page should say is read from `src/data.js`, and compared with the text
 a reader sees, so a content edit needs no edit to the checks. The one exception
 is the years figure, which is pinned in `checks/page-checks.js`.
 
+An experience entry's company, role and period, and a project's title, each
+have to begin a line of that text, once for every time `src/data.js` has them.
+The same words inside a sentence elsewhere on the page do not count, and a
+project that is both featured and listed has to be shown twice. The checks stop
+at the text: they do not tell whether a company, a role and a period are shown
+together as one entry, and a title that also begins some other line of the page
+(a project called "Security" would match the filter of that name) passes with
+its card gone.
+
 The same checks can run against a served copy of the site. The tracked-source
 check is skipped there.
 

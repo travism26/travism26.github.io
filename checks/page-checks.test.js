@@ -212,6 +212,27 @@ test("an experience entry with one part missing is reported for that part", asyn
   assert.match(failures[0], /period.*2019 — Present/);
 });
 
+test("an experience entry whose company and role are left only inside a sentence is reported in full", async () => {
+  const withoutEntry = cleanRoot.replace(/<article>.*?O&#x27;Neil.*?<\/article>/, "");
+  const page = withRoot(cleanPage, `${withoutEntry}<p>Once a Developer at O&#x27;Neil Labs.</p>`);
+  const failures = await failuresOf("shows every experience entry", page);
+  assert.equal(failures.length, 3);
+});
+
+test("a longer role does not stand in for a shorter one that begins it", async () => {
+  const shorter = { company: "Quay Co", role: "Engineer", period: "2021 — Present" };
+  const withShorter = { ...content, experience: [shorter, ...content.experience] };
+  const entry = "<article><div>2021 — Present</div><h3>Engineer</h3><div>Quay Co <span>· Lagos</span></div></article>";
+
+  const shown = await checkPage(sourceOf(withRoot(cleanPage, cleanRoot + entry)), withShorter);
+  assert.deepEqual(shown.flatMap((result) => result.failures), []);
+
+  const notShown = await checkPage(sourceOf(cleanPage), withShorter);
+  const failures = notShown.find((result) => result.name === "shows every experience entry").failures;
+  assert.equal(failures.length, 3);
+  assert.match(failures.join("\n"), /role of the Quay Co entry/);
+});
+
 test("a featured project the page does not show is reported", async () => {
   const page = withRoot(cleanPage, cleanRoot.replace("Fast → Faster", "Fast"));
   const failures = await failuresOf("shows every featured and listed project", page);
@@ -224,6 +245,28 @@ test("a listed project the page does not show is reported", async () => {
   const failures = await failuresOf("shows every featured and listed project", page);
   assert.equal(failures.length, 1);
   assert.match(failures[0], /10× Parser/);
+});
+
+test("a project title that is left only inside a sentence is reported", async () => {
+  const page = withRoot(cleanPage, `${cleanRoot.replace(/<a [^>]*><div>10× Parser.*?<\/a>/, "")}<p>I wrote 10× Parser in a week.</p>`);
+  const failures = await failuresOf("shows every featured and listed project", page);
+  assert.equal(failures.length, 1);
+  assert.match(failures[0], /listed.*10× Parser/);
+});
+
+test("a project that is both featured and listed has to be shown twice", async () => {
+  const both = { ...content, projects: [...content.projects, { name: "Fast → Faster" }] };
+  const listedToo = `${cleanRoot}<a href="https://example.com/fast"><div>Fast → Faster</div></a>`;
+
+  const shownTwice = await checkPage(sourceOf(withRoot(cleanPage, listedToo)), both);
+  assert.deepEqual(shownTwice.flatMap((result) => result.failures), []);
+
+  const shownOnce = await checkPage(sourceOf(cleanPage), both);
+  const failures = shownOnce.find((result) => result.name === "shows every featured and listed project").failures;
+  assert.equal(failures.length, 1);
+  assert.match(failures[0], /Fast → Faster/);
+  assert.match(failures[0], /featured/);
+  assert.match(failures[0], /listed/);
 });
 
 test("a page without the years tile is reported", async () => {
