@@ -5,11 +5,33 @@
 //   origin           the page's own origin, when it has one
 //   html()           the HTML of the home page
 //   asset(pathname)  the text of a local asset, or null when it does not resolve
+//   trackedFiles()   the tracked source the page was built from, as a list of
+//                    { path, text }; only on sources that come with a checkout
 
+import { execFile } from "node:child_process";
 import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { promisify } from "node:util";
 
-// The build output directory, read from disk.
+const repository = fileURLToPath(new URL("..", import.meta.url));
+
+// Every file git tracks in this repository, as it is in the working tree.
+async function trackedFiles() {
+  const { stdout } = await promisify(execFile)("git", ["ls-files", "-z"], { cwd: repository });
+  const files = [];
+  for (const tracked of stdout.split("\0").filter(Boolean)) {
+    try {
+      files.push({ path: tracked, text: await readFile(path.join(repository, tracked), "utf8") });
+    } catch (error) {
+      // A tracked file deleted from the working tree has nothing to read.
+      if (error.code !== "ENOENT") throw error;
+    }
+  }
+  return files;
+}
+
+// The build output directory, read from disk. It is built from this checkout.
 export function directorySource(directory) {
   const root = path.resolve(directory);
 
@@ -32,6 +54,7 @@ export function directorySource(directory) {
       return html;
     },
     asset: read,
+    trackedFiles,
   };
 }
 
