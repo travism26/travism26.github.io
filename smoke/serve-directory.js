@@ -2,9 +2,10 @@
 // a static host does: a directory answers with its index.html, and a path that
 // is not a file answers 404.
 
-import { readFile, stat } from "node:fs/promises";
 import { createServer } from "node:http";
 import path from "node:path";
+
+import { buildOutput } from "../checks/build-output.js";
 
 const CONTENT_TYPES = {
   ".css": "text/css; charset=utf-8",
@@ -15,34 +16,19 @@ const CONTENT_TYPES = {
 };
 
 // Resolves to { url, close() }. Rejects when the directory has no index.html.
+// With no directory given, serves the one the build output module reads.
 export async function serveDirectory(directory) {
-  const root = path.resolve(directory);
-
-  async function resolveFile(pathname) {
-    const file = path.join(root, decodeURIComponent(pathname));
-    if (file !== root && !file.startsWith(root + path.sep)) return null;
-    try {
-      return (await stat(file)).isDirectory() ? path.join(file, "index.html") : file;
-    } catch {
-      return null;
-    }
-  }
-
-  try {
-    await stat(path.join(root, "index.html"));
-  } catch {
-    throw new Error(`No index.html in ${root}. Run the build first.`);
-  }
+  const output = buildOutput(directory);
+  await output.home();
 
   const server = createServer(async (request, response) => {
     try {
-      const file = await resolveFile(new URL(request.url, "http://localhost").pathname);
-      const body = file && (await readFile(file));
-      if (!body) throw new Error("not found");
+      const found = await output.read(new URL(request.url, "http://localhost").pathname);
+      if (!found) throw new Error("not found");
       response.writeHead(200, {
-        "content-type": CONTENT_TYPES[path.extname(file)] ?? "application/octet-stream",
+        "content-type": CONTENT_TYPES[path.extname(found.file)] ?? "application/octet-stream",
       });
-      response.end(body);
+      response.end(found.body);
     } catch {
       response.writeHead(404, { "content-type": "text/plain; charset=utf-8" });
       response.end("Not found");
