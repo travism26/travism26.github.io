@@ -10,7 +10,7 @@ window.PORTFOLIO_DATA = {
     location: "Fredericton, NB",
     available: true,
     blurb: "Senior software engineer specializing in backend development, microservice architecture, and secure coding. Currently building AI-driven development frameworks and LLM-powered agents at Quantiphi, on top of a decade in cloud, distributed systems, and cybersecurity. My agentic developer workflow harness, with evals, best-of-N builds and agent memory, is open source.",
-    longBlurb: "I've been writing production software for 13+ years — XDR correlation engines at IBM, IAM platforms at Quantiphi, AI pipelines at Postilize, serverless workflows at Baseline. The throughline is the same: backend systems that are secure by default and hold up in production. These days I spend most of my time on the AI tooling layer — agentic SDLC frameworks, eval-driven harness engineering, and Claude Code-style automation for engineering workflows. I also build in the open: the ADW harness is public on GitHub, and I ship side projects like a browser-playable game and an offline language-learning app.",
+    longBlurb: "I've been writing production software for 10+ years — XDR correlation engines at IBM, IAM platforms at Quantiphi, AI pipelines at Postilize, serverless workflows at Baseline. The throughline is the same: backend systems that are secure by default and hold up in production. These days I spend most of my time on the AI tooling layer — agentic SDLC frameworks, eval-driven harness engineering, and Claude Code-style automation for engineering workflows. I also build in the open: the ADW harness is public on GitHub, and I ship side projects like a browser-playable game and an offline language-learning app.",
   },
   links: {
     github: "https://github.com/travism26",
@@ -389,7 +389,7 @@ window.PORTFOLIO_DATA = {
     "Writing about how to keep AI assistants effective at scale",
   ],
   numbers: [
-    { value: "13+", label: "Years shipping software" },
+    { value: "10+", label: "Years shipping software" },
     { value: "75%", label: "E2E test time reduction" },
     { value: "10×", label: "Doc processing speedup" },
     { value: "AI", label: "Current focus" },
