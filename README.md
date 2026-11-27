@@ -13,6 +13,9 @@ npm run dev      # run the site locally with live reload
 npm run build    # build the production site into dist/
 npm test         # check the built page in dist/ (build first)
 npm run preview  # serve dist/ locally
+
+npx playwright install chromium  # once: download the browser for the smoke test
+npm run test:smoke               # load the built page in dist/ in Chromium (build first)
 ```
 
 ## Layout
@@ -27,6 +30,7 @@ npm run preview  # serve dist/ locally
   empty; `vite.config.js` fills it with the rendered page, in the build and on
   the dev server alike.
 - `checks/` holds the built-page checks.
+- `smoke/` holds the browser smoke test. `playwright.config.js` configures it.
 
 ## Pre-rendering
 
@@ -62,8 +66,35 @@ check is skipped there.
 CHECK_URL=https://travism26.github.io/ npm test
 ```
 
+`npm test` needs nothing installed, so it also runs where `npm ci` has not.
+
+## Browser smoke test
+
+`npm run test:smoke` serves the build output on a local port, opens it in
+Chromium with [Playwright](https://playwright.dev/) and fails if:
+
+- the page logs an error to the console or throws one, which is how a mismatch
+  between the pre-rendered HTML and the browser's first render shows up;
+- selecting a filter tag does not narrow the project cards to the projects
+  `src/data.js` gives that tag, or selecting "All" does not bring every card
+  back;
+- the main heading is not visible with JavaScript disabled.
+
+The site has no favicon, and Chromium logs the missing `/favicon.ico` when it
+runs with a window. That one message is not counted as an error; a failed load
+of anything else is.
+
+Playwright downloads its own Chromium; `npx playwright install chromium` does
+that once per Playwright version. To test a directory other than `dist/`:
+
+```sh
+CHECK_DIR=some/dir npm run test:smoke
+```
+
 ## Deploying
 
-The workflow in `.github/workflows/deploy.yml` builds and checks every pull
-request. On pushes to `main`, and when run by hand, it also deploys the build
-to GitHub Pages and then runs the checks against the live site.
+The workflow in `.github/workflows/deploy.yml` builds every pull request and
+runs the checks and the browser smoke test on the build. On pushes to `main`,
+and when run by hand, it then deploys the build to GitHub Pages and runs the
+checks against the live site. If the build, a check or the smoke test fails,
+nothing is deployed.

@@ -32,6 +32,12 @@ jobs:
         run: npm run build
       - name: Check the built page
         run: npm test
+      # The smoke test runs headless, which needs only Chromium's headless
+      # shell and the system libraries it links against.
+      - name: Install Chromium for the smoke test
+        run: npx playwright install --with-deps --only-shell chromium
+      - name: Smoke-test the built page in Chromium
+        run: npm run test:smoke
       - name: Upload the build as a Pages artifact
         if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v5
