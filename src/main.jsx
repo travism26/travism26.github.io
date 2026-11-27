@@ -1,7 +1,7 @@
-// Client entry: mounts the application into the page.
+// Client entry: makes the pre-rendered page interactive.
 
-import { createRoot } from "react-dom/client";
+import { hydrateRoot } from "react-dom/client";
 
 import App from "./portfolio.jsx";
 
-createRoot(document.getElementById("root")).render(<App />);
+hydrateRoot(document.getElementById("root"), <App />);
