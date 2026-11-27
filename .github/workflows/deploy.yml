@@ -1,0 +1,91 @@
+name: Build, check and deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Only a run on main deploys, whether a push or a manual run started it. Those
+# runs share one group, so they go out one at a time and a run that has started
+# is never cancelled. Every other run (a pull request, or a manual run on
+# another branch or on a tag) builds and checks without deploying. Such a run
+# shares a group with the other runs on its ref, and a newer one replaces an
+# older one.
+concurrency:
+  group: ${{ github.ref == 'refs/heads/main' && 'pages' || format('checks-{0}', github.ref) }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  build:
+    name: Build and check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install from the lockfile
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Check the built page
+        run: npm test
+      # The smoke test runs headless, which needs only Chromium's headless
+      # shell and the system libraries it links against.
+      - name: Install Chromium for the smoke test
+        run: npx playwright install --with-deps --only-shell chromium
+      - name: Smoke-test the built page in Chromium
+        run: npm run test:smoke
+      - name: Upload the build as a Pages artifact
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    name: Deploy to GitHub Pages
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
+
+  check-live:
+    name: Check the live page
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      # The checks have no dependencies, so there is nothing to install. The
+      # published page can lag the deploy for a moment, hence the retries.
+      - name: Check the live page
+        env:
+          CHECK_URL: ${{ needs.deploy.outputs.page_url }}
+        run: |
+          for attempt in 1 2 3 4 5 6; do
+            if npm test; then
+              exit 0
+            fi
+            echo "Live page check failed (attempt $attempt of 6)."
+            if [ "$attempt" -lt 6 ]; then
+              sleep 10
+            fi
+          done
+          exit 1
