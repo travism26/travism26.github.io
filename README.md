@@ -19,19 +19,44 @@ npm run preview  # serve dist/ locally
 
 - `src/data.js` holds all the content. It is the only file to edit when the
   content changes.
-- `src/portfolio.jsx` is the page; `src/main.jsx` mounts it in the browser.
+- `src/portfolio.jsx` is the page. `src/prerender.jsx` renders it to HTML when
+  the site is built, and `src/main.jsx` hydrates that HTML in the browser.
 - `src/portfolio.css` is the stylesheet. It imports the design tokens in
   `src/design-tokens.css`.
-- `index.html` is the page template Vite builds from.
+- `index.html` is the page template Vite builds from. Its root element is
+  empty; `vite.config.js` fills it with the rendered page, in the build and on
+  the dev server alike.
 - `checks/` holds the built-page checks.
+
+## Pre-rendering
+
+The HTML the site serves already holds the whole page, so it can be read
+without running any JavaScript. The page must render the same on the server and
+in the browser: nothing in `src/portfolio.jsx` may read the clock, randomness or
+browser-only globals such as `window` while rendering.
 
 ## Checks
 
-`npm test` reads the build output and fails if the page loads a script from a
-third-party host, leaves anything for the browser to compile, ships a
-development build of React, or references a local asset that does not exist.
+`npm test` reads the build output and fails if the page:
 
-The same checks can run against a served copy of the site:
+- does not show the owner's name, every experience entry (company, role and
+  period) and every featured and listed project title from `src/data.js`;
+- does not show "10+" beside "Years shipping software", or shows one of the
+  older years figures;
+- still holds the loading splash;
+- loads a script from a third-party host, leaves anything for the browser to
+  compile, ships a development build of React, or references a local asset
+  that does not exist.
+
+It also fails if one of the older years figures is anywhere in the tracked
+source.
+
+What the page should say is read from `src/data.js`, and compared with the text
+a reader sees, so a content edit needs no edit to the checks. The one exception
+is the years figure, which is pinned in `checks/page-checks.js`.
+
+The same checks can run against a served copy of the site. The tracked-source
+check is skipped there.
 
 ```sh
 CHECK_URL=https://travism26.github.io/ npm test

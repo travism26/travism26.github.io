@@ -11,35 +11,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 
 <link rel="stylesheet" href="/src/portfolio.css" />
-
-<style>
-  /* Loader fallback */
-  #boot {
-    position: fixed; inset: 0;
-    display: grid; place-items: center;
-    background: var(--p-ink, #0a0f0c);
-    color: var(--p-accent, #22c55e);
-    font-family: "JetBrains Mono", monospace; font-size: 13px;
-    z-index: 999;
-  }
-  #boot.hide { display: none; }
-</style>
 </head>
 <body>
-  <div id="boot">$ booting portfolio…</div>
   <div id="root"></div>
 
   <script type="module" src="/src/main.jsx"></script>
-
-  <script>
-    // hide the boot splash once React mounts
-    const obs = new MutationObserver(() => {
-      if (document.querySelector("#root .nav")) {
-        document.getElementById("boot").classList.add("hide");
-        obs.disconnect();
-      }
-    });
-    obs.observe(document.getElementById("root"), { childList: true, subtree: true });
-  </script>
 </body>
 </html>

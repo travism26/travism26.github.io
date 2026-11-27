@@ -22,8 +22,9 @@ describe(`built page at ${source.name}`, () => {
   });
 
   for (const { name } of checks) {
-    test(name, () => {
-      const { failures } = report.find((result) => result.name === name);
+    test(name, (t) => {
+      const { failures, skipped } = report.find((result) => result.name === name);
+      if (skipped) return t.skip(skipped);
       if (failures.length > 0) assert.fail(failures.join("\n"));
     });
   }

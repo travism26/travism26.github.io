@@ -1,31 +1,57 @@
 // Built-page checks: what a client receives when it asks for the home page.
 //
 // checkPage(source) takes a page source (see page-sources.js) and reports the
-// failures of every check. To add a check, write a function that takes the
-// loaded page and returns a list of failure messages, and add it to `checks`.
+// failures of every check. What the page should say comes from the content
+// module, so a content edit needs no edit here. To add a check, write a
+// function that takes the loaded page and the content and returns a list of
+// failure messages, and add it to `checks`.
+
+import siteContent from "../src/data.js";
+
+// The one value the checks pin instead of reading it from the content: how
+// long the owner has been shipping software. When the figure moves on, it
+// changes here as well as in the content.
+const YEARS_FIGURE = "10+";
+const YEARS_LABEL = "Years shipping software";
 
 export const checks = [
+  { name: "shows the owner's name", run: ownerName },
+  { name: "shows every experience entry", run: experienceEntries },
+  { name: "shows every featured and listed project", run: projectTitles },
+  { name: `the "${YEARS_LABEL}" tile reads "${YEARS_FIGURE}"`, run: yearsTile },
+  { name: "shows no stale years figure", run: staleYearsOnPage },
+  {
+    name: "tracked source holds no stale years figure",
+    run: staleYearsInSource,
+    skip: (page) => (page.trackedFiles ? null : "this page source comes with no tracked source"),
+  },
+  { name: "shows no loading splash", run: loadingSplash },
   { name: "loads no script from a third-party host", run: thirdPartyScripts },
   { name: "compiles nothing in the browser", run: inBrowserCompilers },
   { name: "ships no development build of React", run: developmentBuilds },
   { name: "every local asset the HTML references resolves", run: unresolvedAssets },
 ];
 
-export async function checkPage(source) {
+// One result for each check: { name, failures }, or { name, failures: [],
+// skipped: reason } for a check that has nothing to look at in this source.
+export async function checkPage(source, content = siteContent) {
   const page = await loadPage(source);
   const report = [];
-  for (const check of checks) {
-    report.push({ name: check.name, failures: await check.run(page) });
+  for (const { name, run, skip } of checks) {
+    const skipped = skip?.(page);
+    report.push(skipped ? { name, failures: [], skipped } : { name, failures: await run(page, content) });
   }
   return report;
 }
 
 // The page as the checks see it:
-//   html      the HTML, comments removed
-//   scripts   every script the page loads: { url, type, body }
-//   assets    every URL the HTML loads as part of the page (not links to follow)
-//   isLocal   whether a URL the page references is served by the site itself
-//   read      the text of a local URL, or null when it does not resolve
+//   html          the HTML, comments removed
+//   text          the text a reader of the page sees, each run of space as one space
+//   scripts       every script the page loads: { url, type, body }
+//   assets        every URL the HTML loads as part of the page (not links to follow)
+//   isLocal       whether a URL the page references is served by the site itself
+//   read          the text of a local URL, or null when it does not resolve
+//   trackedFiles  the tracked source the page was built from, when the source has it
 async function loadPage(source) {
   const html = (await source.html()).replace(/<!--[\s\S]*?-->/g, "");
   const base = new URL(`${source.origin ?? "http://site.invalid"}/`);
@@ -50,11 +76,98 @@ async function loadPage(source) {
 
   return {
     html,
+    text: readableText(markup),
     scripts,
     assets: [...assets],
     isLocal,
     read: (reference) => source.asset(new URL(reference, base).pathname),
+    trackedFiles: source.trackedFiles,
   };
+}
+
+function ownerName(page, content) {
+  return missingText(page, [["the owner's name", content.identity.name]]);
+}
+
+function experienceEntries(page, content) {
+  return missingText(
+    page,
+    content.experience.flatMap(({ company, role, period }) => [
+      [`the company of the ${role} entry (${period})`, company],
+      [`the role of the ${company} entry (${period})`, role],
+      [`the period of the ${role} entry at ${company}`, period],
+    ]),
+  );
+}
+
+function projectTitles(page, content) {
+  return missingText(page, [
+    ...content.featured.map(({ name }) => ["the featured project", name]),
+    ...content.projects.map(({ name }) => ["the listed project", name]),
+  ]);
+}
+
+// One failure for each [description, text] pair the page does not show.
+function missingText(page, expected) {
+  return expected
+    .filter(([, text]) => !page.text.includes(collapseSpace(text)))
+    .map(([description, text]) => `the page does not show ${description}: "${text}"`);
+}
+
+// A tile is a figure with its label beside it, in either order.
+function yearsTile(page) {
+  const figure = `(?<![\\w.])${escapeForPattern(YEARS_FIGURE)}(?![\\w+])`;
+  const label = escapeForPattern(YEARS_LABEL);
+  if (new RegExp(`${figure} ${label}|${label} ${figure}`).test(page.text)) return [];
+  return [`the page does not show "${YEARS_FIGURE}" beside "${YEARS_LABEL}"`];
+}
+
+function escapeForPattern(text) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+// The years figures the site used to show: twelve or thirteen, then a plus
+// sign. They are written as a pattern so that this file does not hold the text
+// it searches tracked source for.
+const STALE_YEARS = /(?<![\d.,])1[23]\+/g;
+
+// Every stale figure in the text, with the words around it.
+function staleYearsIn(text) {
+  return [...text.matchAll(STALE_YEARS)].map(({ 0: figure, index }) => {
+    const around = text.slice(Math.max(0, index - 30), index + figure.length + 30);
+    return { figure, index, around: collapseSpace(around) };
+  });
+}
+
+// A reader's text misses what is only in the head or in an attribute, and the
+// HTML misses a figure split across tags, so both are searched.
+function staleYearsOnPage(page) {
+  const shown = staleYearsIn(page.text);
+  const found = shown.length > 0 ? shown : staleYearsIn(page.html);
+  return found.map(({ figure, around }) => `the page says "${figure}": …${around}…`);
+}
+
+// The lockfile is left out: its integrity hashes are random letters, digits
+// and plus signs, and can spell a figure by chance.
+const NOT_SEARCHED = new Set(["package-lock.json"]);
+
+async function staleYearsInSource(page) {
+  const failures = [];
+  for (const { path, text } of await page.trackedFiles()) {
+    if (NOT_SEARCHED.has(path)) continue;
+    for (const { figure, index, around } of staleYearsIn(text)) {
+      const line = text.slice(0, index).split("\n").length;
+      failures.push(`${path}:${line} says "${figure}": …${around}…`);
+    }
+  }
+  return failures;
+}
+
+// The words the page used to show over everything until its scripts had run.
+const SPLASH_TEXT = "booting portfolio";
+
+function loadingSplash(page) {
+  return page.html.toLowerCase().includes(SPLASH_TEXT) ? [`the page holds the loading splash: "${SPLASH_TEXT}"`] : [];
 }
 
 function thirdPartyScripts(page) {
@@ -114,6 +227,45 @@ async function unresolvedAssets(page) {
 const ATTRIBUTES = `((?:"[^"]*"|'[^']*'|[^>"'])*)`;
 const SCRIPT_ELEMENT = new RegExp(`<script\\b${ATTRIBUTES}>([\\s\\S]*?)</script\\s*>`, "gi");
 const START_TAG = new RegExp(`<([a-z][a-z0-9-]*)\\b${ATTRIBUTES}>`, "gi");
+const ANY_TAG = new RegExp(`</?([a-z][a-z0-9-]*)\\b${ATTRIBUTES}>`, "gi");
+
+// The text a reader of the page sees: the body with its tags removed and its
+// character references decoded. `markup` is the HTML without its comments and
+// scripts. Tags that flow within a line of text vanish; any other tag
+// separates the text on either side of it.
+const UNSEEN_ELEMENTS = /<(head|style)\b[^>]*>[\s\S]*?<\/\1\s*>|<!doctype[^>]*>/gi;
+const TEXT_LEVEL_TAGS = new Set(
+  "a abbr b bdi bdo cite code data dfn em i kbd mark q s samp small span strong sub sup time u var wbr".split(" "),
+);
+
+function readableText(markup) {
+  const text = markup
+    .replace(UNSEEN_ELEMENTS, " ")
+    .replace(ANY_TAG, (_, tag) => (TEXT_LEVEL_TAGS.has(tag.toLowerCase()) ? "" : " "));
+  return collapseSpace(decodeCharacterReferences(text));
+}
+
+function collapseSpace(text) {
+  return text.replace(/\s+/g, " ").trim();
+}
+
+// The named references are the ones for characters the site's content uses;
+// numeric references cover everything else.
+const NAMED_CHARACTERS = {
+  amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: "\u00a0",
+  copy: "\u00a9", middot: "\u00b7", times: "\u00d7",
+  ndash: "\u2013", mdash: "\u2014", lsquo: "\u2018", rsquo: "\u2019",
+  ldquo: "\u201c", rdquo: "\u201d", hellip: "\u2026", rarr: "\u2192",
+};
+
+// A reference that names no character is left as it was written.
+function decodeCharacterReferences(text) {
+  return text.replace(/&(?:#x([0-9a-f]+)|#([0-9]+)|([a-z]+));/gi, (reference, hex, decimal, name) => {
+    if (name) return NAMED_CHARACTERS[name] ?? reference;
+    const codePoint = hex ? parseInt(hex, 16) : parseInt(decimal, 10);
+    return codePoint <= 0x10ffff ? String.fromCodePoint(codePoint) : reference;
+  });
+}
 
 function attributesOf(attributeText) {
   const attributes = {};
