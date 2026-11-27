@@ -16,7 +16,7 @@ import { trackedFiles } from "./tracked-source.js";
 // source is searched with it. A served site is checked on its own.
 const checked = process.env.CHECK_URL
   ? { source: urlSource(process.env.CHECK_URL) }
-  : { source: directorySource(process.env.CHECK_DIR ?? "dist"), trackedFiles };
+  : { source: directorySource(), trackedFiles };
 
 describe(`built page at ${checked.source.name}`, () => {
   let report;

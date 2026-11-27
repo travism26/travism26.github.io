@@ -22,7 +22,7 @@ const taggedWith = (tag) => D.projects.filter((project) => project.tags.includes
 let site;
 
 test.beforeAll(async () => {
-  site = await serveDirectory(process.env.CHECK_DIR ?? "dist");
+  site = await serveDirectory();
 });
 
 test.afterAll(async () => {

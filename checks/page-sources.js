@@ -6,32 +6,22 @@
 //   html()           the HTML of the home page
 //   asset(pathname)  the text of a local asset, or null when it does not resolve
 
-import { readFile, stat } from "node:fs/promises";
-import path from "node:path";
+import { buildOutput } from "./build-output.js";
 
-// The build output directory, read from disk.
+// The build output directory, read from disk: the one given, or the one the
+// build output module reads when none is.
 export function directorySource(directory) {
-  const root = path.resolve(directory);
-
-  async function read(pathname) {
-    const file = path.join(root, decodeURIComponent(pathname));
-    if (file !== root && !file.startsWith(root + path.sep)) return null;
-    try {
-      const target = (await stat(file)).isDirectory() ? path.join(file, "index.html") : file;
-      return await readFile(target, "utf8");
-    } catch {
-      return null;
-    }
-  }
+  const output = buildOutput(directory);
 
   return {
-    name: root,
+    name: output.root,
     async html() {
-      const html = await read("/");
-      if (html === null) throw new Error(`No index.html in ${root}. Run the build first.`);
-      return html;
+      return (await output.home()).body.toString("utf8");
     },
-    asset: read,
+    async asset(pathname) {
+      const found = await output.read(pathname);
+      return found && found.body.toString("utf8");
+    },
   };
 }
 
